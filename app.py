@@ -1,5 +1,3 @@
-# restb.py
-# 119761005-8
 import requests
 import json
 from service import roomF, featF, waterF
@@ -12,11 +10,6 @@ app = Flask(__name__, template_folder='.')
 def main():
 	return render_template('index.html')
 
-# def index(request):
-#     r = requests.get('http://httpbin.org/status/418')
-#     print(r.text)
-#     return HttpResponse('<pre>' + r.text + '</pre>')
-    
 @app.route('/displayResults/', methods=['POST'])
 def getId():
 	propertyId = request.form ['idfield']
@@ -30,7 +23,6 @@ def remove_html_tags(text):
 
 @app.route('/display/', methods=['POST'])
 def display(MLSID):
-	# MLSID = '110400002-240'
 
 	payload = {
 	  'grant_type':'client_credentials',
