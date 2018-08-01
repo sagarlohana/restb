@@ -1,5 +1,6 @@
 import requests
 import json
+import timeit
 from service import roomF, featF, waterF
 from flask import Flask, render_template, request
 from os import environ
@@ -23,7 +24,8 @@ def remove_html_tags(text):
 
 @app.route('/display/', methods=['POST'])
 def display(MLSID):
-
+	totalStartTime = timeit.default_timer()
+	gtStartTime = timeit.default_timer()
 	payload = {
 	  'grant_type':'client_credentials',
 	  'client_id':'419BA8A7-D770-4EB9-9248-01559A95C9F5',
@@ -45,6 +47,9 @@ def display(MLSID):
 
 	response = requests.get(apiUrlBase, headers=headers)
 	jsonResponse = response.json()
+
+	gtEndTime = timeit.default_timer()
+	gtRunTime = round(gtEndTime - gtStartTime, 3)
 
 	# Values from iList API
 	listingid = jsonResponse["value"][0]["ListingId"]
@@ -101,16 +106,21 @@ def display(MLSID):
 	# Lists containing all unique features and room types from RestB Scripts
 	featuresFull = []
 	roomTypeFull = []
+
 	# Lists containing all features and room types from RestB Scripts (including duplicates)
 	fList = []
 	rList = []
 	wMarkList = []
 
-	# ser(imageUrlList, url2, roomTypeModelId, rList, "room")
+	startTime = timeit.default_timer()
+
 	roomF(imageUrlList, rList)
 	featF(imageUrlList, fList)
 	waterF(imageUrlList, wMarkList)
-	# ser(imageUrlList, url1, watermarkModelId, wMarkList, "water")
+
+	stopTime = timeit.default_timer()
+	runTime = stopTime - startTime
+	runTime = round(runTime, 3)
 
 	# Stores all non-duplicate Room Types into a list
 	for room in rList:
@@ -131,11 +141,15 @@ def display(MLSID):
 	if (numOfFeat < len(featuresList)):
 		numOfFeat = len(featuresList)
 
-	return render_template('display.html',listingid=MLSID,regionid=region,address=address,
+	totalEndTime = timeit.default_timer()
+	totalRunTime = round(totalEndTime - totalStartTime, 3)
+
+	return render_template('display.html', listingid=MLSID, regionid=region, address=address,
 		description=description, imageCount=numberOfImages, images=imageUrlList, fullRoom=rList, 
 		fullFeat=fList, fullWatermark=wMarkList, allFeat=featuresFull, allRoom=roomTypeFull, 
-		gtRoomTypes=roomTypeList, gtFeatures=featuresList, numOfRoom=numOfRoom, numOfFeat=numOfFeat)
+		gtRoomTypes=roomTypeList, gtFeatures=featuresList, numOfRoom=numOfRoom, numOfFeat=numOfFeat,
+		runTime = runTime, totalRunTime=totalRunTime, gtRunTime=gtRunTime)
 	# Exports jsonResponse in a .json format
 
 if __name__ == '__main__':
-	 app.run()
+	 app.run(debug=True)

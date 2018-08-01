@@ -39,20 +39,17 @@ def services(image_url_list, url, model_id):
     asyncio.set_event_loop(loop)
     future = asyncio.ensure_future(run(image_url_list, url, model_id))
     loop.run_until_complete(future)
-    #print (dir(future))
     return (future.result())
 
 def roomF(image_url_list, t_list):
 	url = 'https://api-eu.restb.ai/classify'
 	model_id = 'real_estate_global_v2'
-
 	responses = services(image_url_list, url, model_id)
 
 	for i in range (len(image_url_list)):
 		responses[i] = responses[i].decode('utf8').replace("'", '"')
 		responses[i] = json.loads(responses[i])
 		if responses[i]["error"] == "true":
-			# print ("Hello World")
 			payload = {
 	        'client_key': 'acc1ab0931706f2ddc11460c54f69aa586155461a296d3322100c95579573ea5',
 	        'model_id': model_id,
@@ -60,14 +57,9 @@ def roomF(image_url_list, t_list):
 	    	}
 			err_resp = requests.get(url, params=payload, allow_redirects=True, timeout=30)
 			responses[i] = err_resp.json()
-			# print (responses[i])
-		# else:
-		# 	print ("Nope")
 		detectedRoomType = remove_under(responses[i]["response"]["probabilities"][0][0][0])
 		t_list.append(detectedRoomType)
-	
-	# for i in range (len(image_url_list)):
-	# 	print (responses[i]["error"])
+
 
 def featF(image_url_list, t_list):
 	url = 'https://api-eu.restb.ai/segmentation'
@@ -79,7 +71,6 @@ def featF(image_url_list, t_list):
 		responses[i] = responses[i].decode('utf8').replace("'", '"')
 		responses[i] = json.loads(responses[i])
 		if responses[i]["error"] == "true":
-			# print ("Hello World")
 			payload = {
 	        'client_key': 'acc1ab0931706f2ddc11460c54f69aa586155461a296d3322100c95579573ea5',
 	        'model_id': model_id,
@@ -87,9 +78,6 @@ def featF(image_url_list, t_list):
 	    	}
 			err_resp = requests.get(url, params=payload, allow_redirects=True, timeout=30)
 			responses[i] = err_resp.json()
-			# print (responses[i])
-		# else:
-		# 	print ("Nope")
 		featuresList = [] 
 		for feat in responses[i]["response"]["objects"]:
 			featuresList.append(remove_under(feat))
@@ -109,7 +97,6 @@ def waterF(image_url_list, t_list):
 		responses[i] = responses[i].decode('utf8').replace("'", '"')
 		responses[i] = json.loads(responses[i])
 		if responses[i]["error"] == "true":
-			# print ("Hello World")
 			payload = {
 	        'client_key': 'acc1ab0931706f2ddc11460c54f69aa586155461a296d3322100c95579573ea5',
 	        'model_id': model_id,

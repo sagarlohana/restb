@@ -12,6 +12,7 @@
 				margin: 15px;
 				margin-left: auto;
 				margin-right: auto;
+				border-radius: 10px;
 			}
 			h1 {
 				text-align: center;
@@ -79,6 +80,9 @@
 			li {
 				white-space: nowrap;
 			}
+			.zebra:nth-child(even) {
+				background-color: #f2f2f2;
+			}
 		</style>
 	</head>
 	<body link ="white">
@@ -120,11 +124,11 @@
 				<table align="center">
 					<caption><font size="4">Figure 2 - Rooms Identified by AI vs. <br />Rooms Identified by Realtor</font></caption>
 					<thead>
-						<th bgcolor="#1e90ff">Rooms Identified by Realtor:</th>
-						<th bgcolor="#1e90ff">Rooms Identified by AI:</th>
+						<th bgcolor="#1e90ff">Rooms from AI:</th>
+						<th bgcolor="#1e90ff">Rooms from Realtor:</th>
 					</thead>
 				{% for room_num in range(numOfRoom) %}
-				<tr>
+				<tr class = "zebra">
 					<td>{{allRoom[room_num]}}</td>
 					<td>{{gtRoomTypes[room_num]}}</td>
 				</tr>
@@ -135,11 +139,11 @@
 				<table align="center">
 					<caption><font size="4">Figure 3 - Features Identified by AI vs. <br />Features Identified by Realtor</font></caption>
 					<thead>
-						<th bgcolor="#1e90ff">Features Identified by Realtor:</th>
-						<th bgcolor="#1e90ff">Features Identified by AI:</th>
+						<th bgcolor="#1e90ff">Features from AI:</th>
+						<th bgcolor="#1e90ff">Features from Realtor:</th>
 					</thead>
 				{% for feat_num in range(numOfFeat) %}
-				<tr>
+				<tr class = "zebra">
 					<td>{{allFeat[feat_num]}}</td>
 					<td>{{gtFeatures[feat_num]}}</td>
 				</tr>
@@ -147,12 +151,31 @@
 				</table>
 			</div>
 		</div>
+		<table align ="center">
+			<caption><font size = "4"> Run-time Statistics</font></caption>
+			<tr>
+				<th bgcolor="#1e90ff">Images Processed</th>
+				<td> {{ imageCount }} image(s)</td>
+			</tr>
+			<tr>
+				<th bgcolor="#1e90ff">iList API Run-time</th>
+				<td> {{ gtRunTime }} seconds</td>
+			</tr>
+			<tr>
+				<th bgcolor="#1e90ff">AI Run-time</th>
+				<td> {{ runTime }} seconds</td>
+			</tr>
+			<tr>
+				<th bgcolor="#1e90ff">Total Run-time</th>
+				<td> {{ totalRunTime }} seconds </td>
+			</tr>
+		</table>
 		<div class="footer">
 		  <p>Powered by: <a href= "https://restb.ai" style="color: white"/>Restb.ai</a> and iList API</p>
 		</div>
 		<div class = "container">
 			<form action="/">
-	    		<input type="submit" value = "Enter another MLS-ID" style="font-size: 16px">
+	    		<input type="submit" value = "Enter another MLS-ID" style="font-size: 20px">
 			</form>
 		</div>
 	</body>
