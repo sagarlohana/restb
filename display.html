@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<title>Restb.ai App - View Results</title>
+		<link rel="shortcut icon" href="">
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<style type="text/css">
+			* {
+				font-family: 'Roboto', sans-serif;
+			}
+			table {
+				margin: 15px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+			h1 {
+				text-align: center;
+				color: #1e90ff;
+			}
+			table, th, td {
+   				border: 1px solid black;
+    			border-collapse: collapse;
+			}
+			ol {
+				text-align: left;
+				padding-left: 10px;
+			}
+			th, td {
+   				 padding: 15px;
+   				 text-align: left;
+   				 white-space: nowrap;
+			}
+			p {
+  				overflow-wrap: break-word;
+			}
+			.desc{
+				text-align: justify;
+    			text-justify: inter-word;
+			}
+			.footer {
+			   position: fixed;
+			   left: 0;
+			   bottom: 0;
+			   width: 100%;
+			   background-color: #1e90ff;
+			   color: white;
+			   text-align: center;
+			}
+			body {
+			   padding-bottom: 60px;
+			   max-width: 980px;
+    		   margin: auto;
+			}
+			.container {
+			  display: flex;
+			  justify-content: center;
+			}
+			th {
+				color: white;
+			}
+			caption{
+				margin-bottom: 5px;
+			}
+			input[type=submit] {
+			    padding:5px 15px; 
+			    background: #1e90ff;
+			    border:0 none;
+			    cursor:pointer;
+			    -webkit-border-radius: 5px;
+			    border-radius: 5px; 
+			    color: white;
+			}
+			input[type=submit]:hover {
+				color:#1e90ff;
+				border: 1px solid black;
+				background: white;
+				border-color: #1e90ff;
+			}
+			li {
+				white-space: nowrap;
+			}
+		</style>
+	</head>
+	<body link ="white">
+		<h1>Restb.ai Demo</h1>
+		<p><b>Listing ID:</b> {{listingid}}</p>
+		<p><b>Region Name:</b> {{regionid}}</p>
+		<p><b>Address:</b> {{address}}</p>
+		<p><b>Description:</b><br /></p>
+			<div class = "desc">{{description}}</div>
+		<table align="center">
+		<caption><font size="4">Figure 1 - Restb.ai Image Recognition Results</font></caption>
+			<thead>
+				<th bgcolor="#1e90ff">Images</th>
+				<th bgcolor="#1e90ff">Room Type</th>
+				<th bgcolor="#1e90ff">Features</th>
+				<th bgcolor="#1e90ff">Watermark/Logo</th>
+			</thead>
+		{% for row_index in range(imageCount) %}
+    		<tr>
+      			<td><img src="{{images[row_index]}}"/></td>
+      			<td>{{ fullRoom[row_index] }}</td>
+      			<td>
+  					{% if fullFeat[row_index] == "No Features" %}
+  						None
+  					{% else %}
+  					<ol>
+  						{% for feat in fullFeat[row_index] %}
+  							<li>{{ feat }}</li>
+  						{% endfor %}
+  					{% endif %}
+  					</ol>
+      			</td>
+      			<td>{{ fullWatermark[row_index] }}</td>
+    		</tr>
+		{% endfor %}
+		</table>
+		<div class='parent'>
+			<div>
+				<table align="center">
+					<caption><font size="4">Figure 2 - Rooms Identified vs. <br />Rooms Specified on Listing</font></caption>
+					<thead>
+						<th bgcolor="#1e90ff">Rooms Identified:</th>
+						<th bgcolor="#1e90ff">Rooms on Listing:</th>
+					</thead>
+				{% for room_num in range(numOfRoom) %}
+				<tr>
+					<td>{{allRoom[room_num]}}</td>
+					<td>{{gtRoomTypes[room_num]}}</td>
+				</tr>
+				{% endfor %}
+				</table>
+			</div>
+			<div>
+				<table align="center">
+					<caption><font size="4">Figure 3 - Features Identified vs. <br />Features Specified on Listing</font></caption>
+					<thead>
+						<th bgcolor="#1e90ff">Features Identified:</th>
+						<th bgcolor="#1e90ff">Features on Listing:</th>
+					</thead>
+				{% for feat_num in range(numOfFeat) %}
+				<tr>
+					<td>{{allFeat[feat_num]}}</td>
+					<td>{{gtFeatures[feat_num]}}</td>
+				</tr>
+				{% endfor %}
+				</table>
+			</div>
+		</div>
+		<div class="footer">
+		  <p>Powered by: <a href= "https://restb.ai" style="color: white"/>Restb.ai</a> and iList API</p>
+		</div>
+		<div class = "container">
+			<form action="/">
+	    		<input type="submit" value = "Enter another MLS-ID" style="font-size: 16px">
+			</form>
+		</div>
+	</body>
+</html>

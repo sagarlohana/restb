@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang='en'>
+	<head>
+		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+		<title>Restb.ai App</title>
+		<style type="text/css">
+			* {
+				font-family: 'Roboto', sans-serif;
+			}
+			.footer {
+			   position: fixed;
+			   left: 0;
+			   bottom: 0;
+			   width: 100%;
+			   background-color: #1e90ff;
+			   color: white;
+			   text-align: center;
+			}
+			h1 {
+				text-align: center;
+				color: #1e90ff;
+			}
+			.center-div
+			{
+			     margin: 0 auto;
+			     width: 100px;
+			     display: inline;
+
+			}
+			input[type=text] {
+			    padding:5px; 
+			    border:2px solid #ccc; 
+			    -webkit-border-radius: 5px;
+			    border-radius: 5px;
+			}
+
+			input[type=text]:focus {
+				border-color:#333;
+			}
+			input[type=submit] {
+			    padding:5px 15px; 
+			    background: #1e90ff;
+			    border:0 none;
+			    cursor:pointer;
+			    -webkit-border-radius: 5px;
+			    border-radius: 5px;
+			    color:white; 
+			}
+			input[type=submit]:hover {
+				color:#1e90ff;
+				border: 1px solid black;
+				background: white;
+				border-color: #1e90ff;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Restb.ai Demo</h1>
+		<div class = "center-div" align ="center">
+			<form action="/displayResults/" method="post">
+				<div style="clear: both;">
+				<label for="id"> Enter MLS-ID: </label>
+	    		<input type="text" name="idfield">
+	    		<input type="submit" style="font-size: 16px">
+			</form>
+		</div>
+		<div class="footer">
+		  <p>Powered by: <a href= "https://restb.ai" style="color: white"/>Restb.ai</a> and iList API</p>
+		</div>
+	</body>
+</html>
