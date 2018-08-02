@@ -2,8 +2,7 @@ import requests
 import json
 import timeit
 from service import roomF, featF, waterF
-from flask import Flask, render_template, request
-from os import environ
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__, template_folder='.')
 
@@ -14,7 +13,44 @@ def main():
 @app.route('/displayResults/', methods=['POST'])
 def getId():
 	propertyId = request.form ['idfield']
-	return display(propertyId)
+	message = ''
+	if request.method == 'POST':
+		if len(request.form.get('idfield')) <= 0:
+			message = "This field may not be empty"
+			return render_template('index.html', message=message)
+		else:
+			payload = {
+			  'grant_type':'client_credentials',
+			  'client_id':'419BA8A7-D770-4EB9-9248-01559A95C9F5',
+			  'client_secret':'4F3D60AB-CF9A-4504-8DE6-512AF442F314'
+			}
+
+			# *******Grabbing new api_token********
+			apiUrlBaseToken = "https://api.goiconnect.com/api/OAuth/GetToken"
+			headersToken = {'Content-Type': 'application/x-www-form-urlencoded'}
+			responseToken = requests.post(apiUrlBaseToken, headers=headersToken, data=payload)
+			jsonResponseToken = responseToken.json()
+			jsonApiToken = jsonResponseToken ["access_token"]
+
+			# Sending GET Request to iList API
+			apiUrlBase = "https://api.goiconnect.com/odata/Listings?$filter=MLSID eq '{0}'".format(propertyId)
+			headers = {'Content-Type': 'application/json', 
+			           'Authorization': 'Bearer {0}'.format(jsonApiToken),
+			           'Accept-Language': 'ENU'}
+
+			totalStartTime = timeit.default_timer()
+			gtStartTime = timeit.default_timer()
+
+			response = requests.get(apiUrlBase, headers=headers)
+			jsonResponse = response.json()
+
+			if not jsonResponse ["value"]:
+				message = "MLS-ID not found, please enter a valid MLS-ID"
+				return redirect('index.html', message=message)
+
+			gtEndTime = timeit.default_timer()
+			gtRunTime = "{0:.3f}".format(gtEndTime - gtStartTime)
+	return display(propertyId, jsonResponse, totalStartTime, gtRunTime)
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
@@ -23,36 +59,9 @@ def remove_html_tags(text):
     return re.sub(clean, '', text)
 
 @app.route('/display/', methods=['POST'])
-def display(MLSID):
-	totalStartTime = timeit.default_timer()
-	gtStartTime = timeit.default_timer()
-	payload = {
-	  'grant_type':'client_credentials',
-	  'client_id':'419BA8A7-D770-4EB9-9248-01559A95C9F5',
-	  'client_secret':'4F3D60AB-CF9A-4504-8DE6-512AF442F314'
-	}
-
-	# *******Grabbing new api_token********
-	apiUrlBaseToken = "https://api.goiconnect.com/api/OAuth/GetToken"
-	headersToken = {'Content-Type': 'application/x-www-form-urlencoded'}
-	responseToken = requests.post(apiUrlBaseToken, headers=headersToken, data=payload)
-	jsonResponseToken = responseToken.json()
-	jsonApiToken = jsonResponseToken ["access_token"]
-
-	# Sending GET Request to iList API
-	apiUrlBase = "https://api.goiconnect.com/odata/Listings?$filter=MLSID eq '{0}'".format(MLSID)
-	headers = {'Content-Type': 'application/json', 
-	           'Authorization': 'Bearer {0}'.format(jsonApiToken),
-	           'Accept-Language': 'ENU'}
-
-	response = requests.get(apiUrlBase, headers=headers)
-	jsonResponse = response.json()
-
-	gtEndTime = timeit.default_timer()
-	gtRunTime = round(gtEndTime - gtStartTime, 3)
-
+def display(propertyId, jsonResponse, totalStartTime, gtRunTime):
 	# Values from iList API
-	listingid = jsonResponse["value"][0]["ListingId"]
+
 	region = jsonResponse["value"][0]["Region"]["RegionName"]
 	propertyType = jsonResponse["value"][0]["PropertyType"]
 
@@ -81,7 +90,6 @@ def display(MLSID):
 			featuresList.append(feat["FeatureName"])
 
 	numberOfFeatures = len(featuresList)
-
 	roomTypeList = []
 
 	# Loops through all room types in list, verified that this is working
@@ -119,8 +127,7 @@ def display(MLSID):
 	waterF(imageUrlList, wMarkList)
 
 	stopTime = timeit.default_timer()
-	runTime = stopTime - startTime
-	runTime = round(runTime, 3)
+	runTime = "{0:.3f}".format(stopTime - startTime)
 
 	# Stores all non-duplicate Room Types into a list
 	for room in rList:
@@ -135,20 +142,25 @@ def display(MLSID):
 					featuresFull.append(item)
 
 	numOfRoom = len (roomTypeFull)
+	room_ai = numOfRoom
 	if (numOfRoom < numberOfRoomTypes):
 		numOfRoom = numberOfRoomTypes
+
 	numOfFeat = len (featuresFull)
-	if (numOfFeat < len(featuresList)):
-		numOfFeat = len(featuresList)
+	feat_gt = len(featuresList)
+	feat_ai = numOfFeat
+	if (numOfFeat < feat_gt):
+		numOfFeat = feat_gt
 
 	totalEndTime = timeit.default_timer()
-	totalRunTime = round(totalEndTime - totalStartTime, 3)
+	totalRunTime = "{0:.3f}".format(totalEndTime - totalStartTime)
 
-	return render_template('display.html', listingid=MLSID, regionid=region, address=address,
+	return render_template('display.html', listingid=propertyId, regionid=region, address=address,
 		description=description, imageCount=numberOfImages, images=imageUrlList, fullRoom=rList, 
 		fullFeat=fList, fullWatermark=wMarkList, allFeat=featuresFull, allRoom=roomTypeFull, 
 		gtRoomTypes=roomTypeList, gtFeatures=featuresList, numOfRoom=numOfRoom, numOfFeat=numOfFeat,
-		runTime = runTime, totalRunTime=totalRunTime, gtRunTime=gtRunTime)
+		runTime = runTime, totalRunTime=totalRunTime, gtRunTime=gtRunTime, room_gt= numberOfRoomTypes, room_ai=room_ai,
+		feat_gt=feat_gt, feat_ai= feat_ai)
 	# Exports jsonResponse in a .json format
 
 if __name__ == '__main__':

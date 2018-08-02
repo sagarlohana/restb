@@ -53,6 +53,9 @@
 				background: white;
 				border-color: #1e90ff;
 			}
+			.err_message{
+				color: red;
+			}
 		</style>
 	</head>
 	<body>
@@ -60,10 +63,11 @@
 		<div class = "center-div" align ="center">
 			<form action="/displayResults/" method="post">
 				<div style="clear: both;">
-				<label for="id"> Enter MLS-ID: </label>
-	    		<input type="text" name="idfield">
-	    		<input type="submit" style="font-size: 16px">
+				<label for="id" style = "font-size: 20px"> Enter MLS-ID: </label>
+	    		<input type="text" name="idfield" style= "font-size:20px">
+	    		<input type="submit" style="font-size: 20px" id = "submit_button">
 			</form>
+			<p class = "err_message"> {{ message }}</p>
 		</div>
 		<div class="footer">
 		  <p>Powered by: <a href= "https://restb.ai" style="color: white"/>Restb.ai</a> and iList API</p>
