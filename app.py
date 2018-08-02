@@ -46,7 +46,7 @@ def getId():
 
 			if not jsonResponse ["value"]:
 				message = "MLS-ID not found, please enter a valid MLS-ID"
-				return redirect('index.html', message=message)
+				return render_template('index.html', message=message)
 
 			gtEndTime = timeit.default_timer()
 			gtRunTime = "{0:.3f}".format(gtEndTime - gtStartTime)
